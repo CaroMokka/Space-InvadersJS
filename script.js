@@ -25,6 +25,7 @@ let ship = {
 }
 
 let shipImage;
+let shipMovingX = tileSize;
 
 window.onload = function(){
 
@@ -37,14 +38,31 @@ window.onload = function(){
     // context.fillStyle = 'green';
     // context.fillRect(ship.x, ship.y, shipWidth, shipHeight);
 
-    let shipImage = new Image();
+    shipImage = new Image();
     shipImage.src = '/assets/ship.png';
     
     shipImage.onload = function(){
+       
         context.drawImage(shipImage, ship.x, ship.y, ship.width, ship.height);
     }
+    requestAnimationFrame(update);
+    document.addEventListener("keydown", moveShip)
 }
 
+function update(){
+    requestAnimationFrame(update);
+    //context.clearRect(0, 0, board.width, board.height);
+    //ship una y otra vez, genera animacion
+    //console.log(typeof shipImage[this.spriteCostumeCount])
+    context.drawImage(shipImage, ship.x, ship.y, ship.width, ship.height);
+}
 
-
+function moveShip(e){
+    console.log(e);
+    if(e.code == "ArrowLeft") {
+        ship.x = ship.x - shipMovingX;
+    } else if(e.code == "ArrowRight") {
+        ship.x = ship.x + shipMovingX;
+    }
+}
 
