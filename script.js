@@ -27,6 +27,13 @@ let ship = {
 let shipImage;
 let shipMovingX = tileSize;
 
+//aliens
+let aliensArray = [];
+let alienWidth = tileSize * 2;
+let alienHeight = tileSize;
+let alienX = tileSize;
+let alienY = tileSize;
+
 window.onload = function(){
 
     board = document.getElementById('board');
@@ -51,7 +58,7 @@ window.onload = function(){
 
 function update(){
     requestAnimationFrame(update);
-    //context.clearRect(0, 0, board.width, board.height);
+    context.clearRect(0, 0, board.width, board.height);
     //ship una y otra vez, genera animacion
     //console.log(typeof shipImage[this.spriteCostumeCount])
     context.drawImage(shipImage, ship.x, ship.y, ship.width, ship.height);
@@ -59,9 +66,9 @@ function update(){
 
 function moveShip(e){
     console.log(e);
-    if(e.code == "ArrowLeft") {
+    if(e.code == "ArrowLeft" && ship.x - shipMovingX >= 0) {
         ship.x = ship.x - shipMovingX;
-    } else if(e.code == "ArrowRight") {
+    } else if(e.code == "ArrowRight" && ship.x + shipMovingX + ship.width <= boardWidth) {
         ship.x = ship.x + shipMovingX;
     }
 }
