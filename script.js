@@ -17,6 +17,7 @@ let shipHeight = tileSize;
 let shipX = (tileSize * cols) / 2 - tileSize;
 let shipY = tileSize * rows - tileSize * 2;
 
+//ship
 let ship = {
   x: shipX,
   y: shipY,
@@ -38,6 +39,10 @@ let alienImage;
 let aliensRows = 2;
 let aliensCols = 3;
 let aliensCount = 0;
+
+//aliens speed
+let alienMovingX = 1;
+
 
 window.onload = function () {
   board = document.getElementById("board");
@@ -70,9 +75,27 @@ function update() {
   //ship
   context.drawImage(shipImage, ship.x, ship.y, ship.width, ship.height);
   //aliens
-//   for(let i = 0; i < aliensArray.length; i++) {
-//     let alien = aliensArray[i];
-//   }
+  for(let i = 0; i < aliensArray.length; i++) {
+    let alien = aliensArray[i];
+    if(alien.alive) {
+        alien.x = alien.x + alienMovingX;
+        console.log(alienMovingX);
+        //Si aliens tocan los bordes del canvas
+        if(alien.x + alien.width >= board.width || alien.x <= 0 ) {
+            //Entonces invierte la velocidad
+            //alien.x = alien.x - alienMovingX;
+            alienMovingX = alienMovingX * -1;
+            alien.x = alien.x + alienMovingX*2;
+            
+
+            //mover aliens hacia abajo en y por el canvas
+            for(let j = 0; j < aliensArray.length; j++) {
+                aliensArray[j].y = aliensArray[j].y + alienHeight;
+            }
+        }
+        context.drawImage(alienImage, alien.x, alien.y, alien.width, alien.height);
+    }
+  } 
 
 
 }
