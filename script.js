@@ -43,6 +43,9 @@ let aliensCount = 0;
 //aliens speed
 let alienMovingX = 1;
 
+//bullets
+let bulletsArray = [];
+let bulletsSpeedY = -10;
 
 window.onload = function () {
   board = document.getElementById("board");
@@ -66,6 +69,7 @@ window.onload = function () {
   };
   requestAnimationFrame(update);
   document.addEventListener("keydown", moveShip);
+  document.addEventListener("keyup", shoot);
 };
 
 function update() {
@@ -75,29 +79,40 @@ function update() {
   //ship
   context.drawImage(shipImage, ship.x, ship.y, ship.width, ship.height);
   //aliens
-  for(let i = 0; i < aliensArray.length; i++) {
+  for (let i = 0; i < aliensArray.length; i++) {
     let alien = aliensArray[i];
-    if(alien.alive) {
-        alien.x = alien.x + alienMovingX;
-        console.log(alienMovingX);
-        //Si aliens tocan los bordes del canvas
-        if(alien.x + alien.width >= board.width || alien.x <= 0 ) {
-            //Entonces invierte la velocidad
-            //alien.x = alien.x - alienMovingX;
-            alienMovingX = alienMovingX * -1;
-            alien.x = alien.x + alienMovingX*2;
-            
+    if (alien.alive) {
+      alien.x = alien.x + alienMovingX;
+      console.log(alienMovingX);
+      //Si aliens tocan los bordes del canvas
+      if (alien.x + alien.width >= board.width || alien.x <= 0) {
+        //Entonces invierte la velocidad
+        //alien.x = alien.x - alienMovingX;
+        alienMovingX = alienMovingX * -1;
+        alien.x = alien.x + alienMovingX * 2;
 
-            //mover aliens hacia abajo en y por el canvas
-            for(let j = 0; j < aliensArray.length; j++) {
-                aliensArray[j].y = aliensArray[j].y + alienHeight;
-            }
+        //mover aliens hacia abajo en y por el canvas
+        for (let j = 0; j < aliensArray.length; j++) {
+          aliensArray[j].y = aliensArray[j].y + alienHeight;
         }
-        context.drawImage(alienImage, alien.x, alien.y, alien.width, alien.height);
+      }
+      context.drawImage(
+        alienImage,
+        alien.x,
+        alien.y,
+        alien.width,
+        alien.height
+      );
     }
-  } 
-
-
+  }
+  //bullets
+    for(let i = 0; i < bulletsArray.length; i++){
+        let bullet = bulletsArray[i];
+        console.log(bullet);
+        bullet.y = bullet.y + bulletsSpeedY;
+        context.fillStyle = 'white';
+        context.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);          
+    }
 }
 
 function moveShip(e) {
@@ -117,15 +132,27 @@ function createAliens() {
     for (let r = 0; r < aliensRows; r++) {
       let alien = {
         img: alienImage,
-        x: alienX + c*alienWidth,
-        y: alienY + r*alienHeight,
+        x: alienX + c * alienWidth,
+        y: alienY + r * alienHeight,
         width: alienWidth,
         height: alienHeight,
-        alive : true
+        alive: true,
       };
       aliensArray.push(alien);
     }
   }
   aliensCount = aliensArray.length;
 }
- 
+
+function shoot(e) {
+  if (e.code == "Space") {
+    let bullet = {
+      x: ship.x + (ship.width * 15) / 32,
+      y: ship.y,
+      width: tileSize / 8,
+      height: tileSize / 2,
+      used: false,
+    };
+    bulletsArray.push(bullet);
+  }
+}
