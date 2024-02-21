@@ -51,8 +51,7 @@ window.onload = function () {
   board = document.getElementById("board");
   board.width = boardWidth;
   board.height = boardHeight;
-  context = board.getContext("2d"); //se usa para dibujar en eltablero
-
+  context = board.getContext("2d");
   //draw ship
   // context.fillStyle = 'green';
   // context.fillRect(ship.x, ship.y, shipWidth, shipHeight);
@@ -106,13 +105,25 @@ function update() {
     }
   }
   //bullets
-    for(let i = 0; i < bulletsArray.length; i++){
-        let bullet = bulletsArray[i];
-        console.log(bullet);
-        bullet.y = bullet.y + bulletsSpeedY;
-        context.fillStyle = 'white';
-        context.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);          
+  for (let i = 0; i < bulletsArray.length; i++) {
+    let bullet = bulletsArray[i];
+    bullet.y = bullet.y + bulletsSpeedY;
+    context.fillStyle = "white";
+    context.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+    //bullets collision con aliens
+    for(let j = 0; j < aliensArray.length; j++){
+        let alien = aliensArray[j];
+        if(!bullet.used && alien.alive && detectCollision(bullet, alien)){
+            bullet.used = true;
+            alien.alive = false;
+            aliensCount --;
+        }
     }
+  }
+  //clear bullets
+  while(bulletsArray.length > 0 && (bulletsArray[0].used || bulletsArray[0].y < 0)){
+    bulletsArray.shift();
+  }
 }
 
 function moveShip(e) {
@@ -147,12 +158,21 @@ function createAliens() {
 function shoot(e) {
   if (e.code == "Space") {
     let bullet = {
-      x: ship.x + (ship.width * 15) / 32,
+      x: ship.x + ship.width*15/32,
       y: ship.y,
       width: tileSize / 8,
       height: tileSize / 2,
       used: false,
     };
-    bulletsArray.push(bullet);
+    bulletsArray.push(bullet); 
   }
+}
+
+function detectCollision(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
 }
