@@ -47,6 +47,10 @@ let alienMovingX = 1;
 let bulletsArray = [];
 let bulletsSpeedY = -10;
 
+//score
+let score = 0;
+let gameOver = false;
+
 window.onload = function () {
   board = document.getElementById("board");
   board.width = boardWidth;
@@ -73,6 +77,9 @@ window.onload = function () {
 
 function update() {
   requestAnimationFrame(update);
+  if (gameOver) {
+    return;
+  }
   context.clearRect(0, 0, board.width, board.height);
   //console.log(typeof shipImage[this.spriteCostumeCount])
   //ship
@@ -102,6 +109,10 @@ function update() {
         alien.width,
         alien.height
       );
+      //game over
+      if(alien.y >= ship.y){
+        gameOver = true;
+      }
     }
   }
   //bullets
@@ -111,23 +122,43 @@ function update() {
     context.fillStyle = "white";
     context.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
     //bullets collision con aliens
-    for(let j = 0; j < aliensArray.length; j++){
-        let alien = aliensArray[j];
-        if(!bullet.used && alien.alive && detectCollision(bullet, alien)){
-            bullet.used = true;
-            alien.alive = false;
-            aliensCount --;
-        }
+    for (let j = 0; j < aliensArray.length; j++) {
+      let alien = aliensArray[j];
+      if (!bullet.used && alien.alive && detectCollision(bullet, alien)) {
+        bullet.used = true;
+        alien.alive = false;
+        aliensCount--;
+        score += 100;   
+      }
     }
   }
   //clear bullets
-  while(bulletsArray.length > 0 && (bulletsArray[0].used || bulletsArray[0].y < 0)){
+  while (
+    bulletsArray.length > 0 &&
+    (bulletsArray[0].used || bulletsArray[0].y < 0)
+  ) {
     bulletsArray.shift();
   }
+  //next level
+  if (aliensCount == 0) {
+    //incremenntar aliens e filas y columnnas
+    aliensCols = Math.min(aliensCols + 1, cols / 2 - 2);
+    aliensRows = Math.min(aliensRows + 1, rows - 4);
+    alienMovingX += 0.2; //incementar velocidad de aliens
+    aliensArray = [];
+    bulletsArray = [];
+    createAliens();
+  }
+  //score in canvas
+  context.fillStyle = 'white';
+  context.fillFont = '16px courier';
+  context.fillText(score, 5, 20);
 }
 
 function moveShip(e) {
-  console.log(e);
+  if (gameOver) {
+    return;
+  }
   if (e.code == "ArrowLeft" && ship.x - shipMovingX >= 0) {
     ship.x = ship.x - shipMovingX;
   } else if (
@@ -156,15 +187,18 @@ function createAliens() {
 }
 
 function shoot(e) {
+  if (gameOver) {
+    return;
+  }
   if (e.code == "Space") {
     let bullet = {
-      x: ship.x + ship.width*15/32,
+      x: ship.x + (ship.width * 15) / 32,
       y: ship.y,
       width: tileSize / 8,
       height: tileSize / 2,
       used: false,
     };
-    bulletsArray.push(bullet); 
+    bulletsArray.push(bullet);
   }
 }
 
